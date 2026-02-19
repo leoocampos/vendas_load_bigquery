@@ -15,7 +15,7 @@ DATASET_ID = 'BRONZE'
 TABLE_ID = 'vendas'
 BUCKET_NAME = "sample-track-files"
 
-@app.post('/vendas_load_bigquery')
+@app.post("/vendas_load_bigquery")
 def load_vendas_to_bq():
     try:
         # 1. Obter nome do arquivo do JSON enviado (ou fixo se preferir)
@@ -35,9 +35,11 @@ def load_vendas_to_bq():
         # 4. Processar com Pandas (Lendo os bytes do Excel)
         df_vendas = pd.read_excel(io.BytesIO(content), engine='openpyxl')
         
-        # Adicionar coluna de data de carga
+        # Adicionar coluna de data de carga e formatar STRING
         dat_ref = datetime.now(tz=pytz.timezone(TIME_SP)).date()
         df_vendas = df_vendas.assign(dat_ref_carga=pd.to_datetime(dat_ref))
+        df_vendas['dat_ref_carga'] = df_vendas['dat_ref_carga'].dt.strftime('%Y-%m-%d')
+        df_vendas = df_vendas.astype(str)
 
         # 5. Carregar no BigQuery
         # table_id completo: projeto.dataset.tabela
@@ -58,4 +60,4 @@ def load_vendas_to_bq():
         return jsonify({"status": "error", "details": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(host="0.0.0.0", port=8080)
