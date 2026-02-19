@@ -15,7 +15,7 @@ DATASET_ID = 'BRONZE'
 TABLE_ID = 'vendas'
 BUCKET_NAME = "sample-track-files"
 
-@app.post('/vendas-load-bigquery')
+@app.post('/vendas_load_bigquery')
 def load_vendas_to_bq():
     try:
         # 1. Obter nome do arquivo do JSON enviado (ou fixo se preferir)
